@@ -51,10 +51,12 @@ Request flow:
 User voice/text
   -> frontend/components/ChatBox.tsx
   -> backend/api/main.py POST /api/chat
+  -> request validation and guardrails
+  -> deterministic tool selection
   -> backend/mcp/server.py FastMCP tool registry
   -> backend/mcp/tools.py
   -> data/complaints.json
-  -> response with selected MCP tool
+  -> response with selected MCP tool, source, trace ID, and latency
 ```
 
 The app keeps the demo reliable by using 5 internal MCP tools over a static JSON dataset and 5 external MCP adapter tools for production-style integrations. The tools are implemented in `backend/mcp/tools.py` and exposed through `backend/mcp/server.py`.
@@ -127,9 +129,20 @@ GitHub production deployment checks are handled by `.github/workflows/vercel-pro
 
 - Success criteria: `guides/success_criteria.md`
 - Prompt and routing iteration log: `guides/prompt_iteration_log.md`
+- Rubric map: `guides/assessment_rubric_map.md`
 - Architecture notes: `guides/architecture.md`
 - Deployment notes: `guides/deployment.md`
 - Video scripts: `guides/video_scripts.md`
+
+## Production-Readiness Map
+
+- Success criteria: core complaint flows, production behavior, safety, and verification commands are defined in `guides/success_criteria.md`.
+- Edge cases: empty input, oversized input, prompt-injection attempts, missing external integrations, and adversarial secret requests are handled.
+- Tests: backend unit tests cover complaint tools, routing, external adapter fallbacks, and guardrail behavior.
+- Security: unsafe requests return `security_guardrail` before tool selection.
+- Observability: `/api/chat` returns trace ID and latency, and emits structured backend logs.
+- Deployment: frontend and backend are public, and GitHub Actions reports CI plus a production deployment status.
+- Communication: video scripts and final presentation notes are in `guides/video_scripts.md`.
 
 ## Submission Links
 
@@ -143,17 +156,7 @@ See `SUBMISSION_CHECKLIST.md` for the final submission checklist.
 
 ## Video Scripts
 
-### Video 1: What I Will Build
-
-"I am building an MCP-powered Customer Report Agent Chatbot. The goal is to help support teams turn raw customer complaints into instant summaries and manager-ready reports. The app will use MCP tools to retrieve complaints, identify urgent cases, summarize recurring issues, and generate a report. I will deploy the frontend on Vercel for speed, and I can describe AWS as the production path."
-
-### Video 2: Midway Progress
-
-"At this stage, the project structure is ready, the complaint dataset is prepared, and the MCP server exposes the core tools. The UI is connected to the backend, and I am now polishing the final agent response and preparing deployment."
-
-### Video 3: Final Demo
-
-"This is the final MCP Customer Report Agent Chatbot. A user can ask for urgent complaints, recurring issues, or a manager-ready summary. Behind the scenes, the app uses MCP tools to retrieve and process complaint data, then returns a business-friendly report. The code is on GitHub and the app is deployed on Vercel."
+Use `guides/video_scripts.md` for the current Video 1, Video 2, and Video 3 scripts. Those scripts match the implemented app, including success criteria, prompt/routing iteration, guardrails, tests, deployment, and final demo flow.
 
 ## Production Extension
 
