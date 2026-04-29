@@ -130,6 +130,7 @@ GitHub production deployment checks are handled by `.github/workflows/vercel-pro
 - Success criteria: `guides/success_criteria.md`
 - Prompt and routing iteration log: `guides/prompt_iteration_log.md`
 - Rubric map: `guides/assessment_rubric_map.md`
+- Evaluation results: `guides/evaluation_results.md`
 - Architecture notes: `guides/architecture.md`
 - Deployment notes: `guides/deployment.md`
 - Video scripts: `guides/video_scripts.md`

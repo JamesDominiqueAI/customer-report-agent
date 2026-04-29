@@ -8,7 +8,7 @@ This file maps the Wakanda assessment criteria to concrete project evidence.
 - Prompt/routing iteration: `guides/prompt_iteration_log.md`
 - Edge cases: `backend/api/main.py` guardrails and `backend/tests/test_mcp_tools.py`
 - Tests: `uv run python -m unittest discover backend/tests`
-- Evaluation: backend tests verify expected tool routing, safe adapter fallback, and adversarial prompt handling.
+- Evaluation: `guides/evaluation_results.md` summarizes test results, manual demo checks, and conclusions.
 - Security: unsafe requests return `security_guardrail` before tool selection.
 - Observability: `/api/chat` returns `traceId` and `latencyMs`; backend emits structured JSON logs.
 

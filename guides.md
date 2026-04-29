@@ -66,6 +66,7 @@ Use these files when explaining production readiness:
 - `guides/success_criteria.md`: measurable success criteria.
 - `guides/prompt_iteration_log.md`: prompt/routing iteration evidence.
 - `guides/assessment_rubric_map.md`: direct map from assessment criteria to project evidence.
+- `guides/evaluation_results.md`: test results and evaluation conclusions.
 - `guides/architecture.md`: detailed architecture.
 - `guides/deployment.md`: deployment model.
 - `backend/tests/test_mcp_tools.py`: test coverage for tools, routing, fallbacks, and guardrails.
