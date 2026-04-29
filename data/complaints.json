@@ -1,0 +1,162 @@
+[
+  {
+    "id": "C-1001",
+    "customer": "Avery Stone",
+    "channel": "email",
+    "category": "billing",
+    "urgency": "high",
+    "sentiment": "negative",
+    "createdAt": "2026-04-21",
+    "text": "I was charged twice for my subscription renewal and support has not reversed the duplicate payment."
+  },
+  {
+    "id": "C-1002",
+    "customer": "Mina Patel",
+    "channel": "chat",
+    "category": "delivery",
+    "urgency": "medium",
+    "sentiment": "negative",
+    "createdAt": "2026-04-21",
+    "text": "My replacement device was promised for Friday but the tracking number still says label created."
+  },
+  {
+    "id": "C-1003",
+    "customer": "Jon Bell",
+    "channel": "phone",
+    "category": "product quality",
+    "urgency": "high",
+    "sentiment": "negative",
+    "createdAt": "2026-04-22",
+    "text": "The unit overheated after ten minutes of use and I need a safe replacement before tomorrow's job."
+  },
+  {
+    "id": "C-1004",
+    "customer": "Nora Chen",
+    "channel": "email",
+    "category": "account access",
+    "urgency": "high",
+    "sentiment": "negative",
+    "createdAt": "2026-04-22",
+    "text": "I cannot reset my password because the reset link expires immediately every time."
+  },
+  {
+    "id": "C-1005",
+    "customer": "Luis Gomez",
+    "channel": "chat",
+    "category": "billing",
+    "urgency": "medium",
+    "sentiment": "mixed",
+    "createdAt": "2026-04-23",
+    "text": "The invoice total is higher than the plan shown on the pricing page, but the agent was polite."
+  },
+  {
+    "id": "C-1006",
+    "customer": "Priya Shah",
+    "channel": "email",
+    "category": "technical support",
+    "urgency": "low",
+    "sentiment": "neutral",
+    "createdAt": "2026-04-23",
+    "text": "The dashboard export button is unclear and I need instructions for downloading monthly activity."
+  },
+  {
+    "id": "C-1007",
+    "customer": "Ethan Brooks",
+    "channel": "chat",
+    "category": "delivery",
+    "urgency": "high",
+    "sentiment": "negative",
+    "createdAt": "2026-04-24",
+    "text": "The shipment arrived with missing accessories and I need the parts for an installation today."
+  },
+  {
+    "id": "C-1008",
+    "customer": "Sam Rivera",
+    "channel": "phone",
+    "category": "account access",
+    "urgency": "medium",
+    "sentiment": "negative",
+    "createdAt": "2026-04-24",
+    "text": "Two-factor authentication sends codes to an old phone number that I can no longer access."
+  },
+  {
+    "id": "C-1009",
+    "customer": "Grace Kim",
+    "channel": "email",
+    "category": "product quality",
+    "urgency": "medium",
+    "sentiment": "negative",
+    "createdAt": "2026-04-25",
+    "text": "The replacement item has the same loose connector problem as the original order."
+  },
+  {
+    "id": "C-1010",
+    "customer": "Theo Martin",
+    "channel": "chat",
+    "category": "technical support",
+    "urgency": "low",
+    "sentiment": "mixed",
+    "createdAt": "2026-04-25",
+    "text": "The app is useful, but the new navigation makes it hard to find saved reports."
+  },
+  {
+    "id": "C-1011",
+    "customer": "Hannah Wright",
+    "channel": "email",
+    "category": "billing",
+    "urgency": "high",
+    "sentiment": "negative",
+    "createdAt": "2026-04-26",
+    "text": "My enterprise contract was cancelled by mistake and the billing portal still blocks renewal."
+  },
+  {
+    "id": "C-1012",
+    "customer": "Omar Nasser",
+    "channel": "phone",
+    "category": "delivery",
+    "urgency": "medium",
+    "sentiment": "negative",
+    "createdAt": "2026-04-26",
+    "text": "The courier marked the order delivered, but our front desk never received the package."
+  },
+  {
+    "id": "C-1013",
+    "customer": "Lena Ortiz",
+    "channel": "chat",
+    "category": "technical support",
+    "urgency": "high",
+    "sentiment": "negative",
+    "createdAt": "2026-04-27",
+    "text": "The reporting API returns 500 errors during our daily sync window and blocks operations."
+  },
+  {
+    "id": "C-1014",
+    "customer": "Marcus Lee",
+    "channel": "email",
+    "category": "product quality",
+    "urgency": "low",
+    "sentiment": "neutral",
+    "createdAt": "2026-04-27",
+    "text": "The packaging was dented, though the product appears to work so far."
+  },
+  {
+    "id": "C-1015",
+    "customer": "Iris Young",
+    "channel": "chat",
+    "category": "account access",
+    "urgency": "medium",
+    "sentiment": "negative",
+    "createdAt": "2026-04-28",
+    "text": "A teammate invitation keeps failing with an unexplained error message."
+  },
+  {
+    "id": "C-1016",
+    "customer": "Caleb Reed",
+    "channel": "phone",
+    "category": "billing",
+    "urgency": "low",
+    "sentiment": "mixed",
+    "createdAt": "2026-04-28",
+    "text": "I need a corrected receipt for finance because the tax line is missing."
+  }
+]
