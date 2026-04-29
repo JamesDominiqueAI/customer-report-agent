@@ -17,7 +17,7 @@ Manager voice/text prompt
   -> backend/mcp/server.py FastMCP registry
   -> backend/mcp/tools.py deterministic complaint tools
   -> data/complaints.json
-  -> markdown response + selected MCP tool
+  -> markdown response + selected MCP tool/source/trace/latency
 ```
 
 If the MCP server call fails, the API falls back to direct Python tool calls. That keeps the demo reliable while still showing the MCP orchestration pattern.
@@ -33,6 +33,7 @@ Implemented features:
 - optional read-aloud responses through speech synthesis
 - demo prompt buttons
 - MCP activity panel with selected tool, source, dataset, and response time
+- trace ID display for request correlation
 - complaint browser with search, sentiment filter, urgency filter, and detail view
 - recommended action per complaint
 - CSV export for filtered complaints
@@ -57,7 +58,16 @@ Implemented endpoints:
 - `GET /api/export.csv`
 - `POST /api/chat`
 
-`POST /api/chat` accepts a manager question, selects the best tool with keyword routing, calls the MCP registry, and formats the result for the frontend.
+`POST /api/chat` accepts a manager question, validates it, selects the best tool with keyword routing, calls the MCP registry, and formats the result for the frontend.
+
+Each chat response includes:
+
+- selected tool
+- response source: `mcp` or `direct`
+- trace ID
+- backend latency in milliseconds
+
+Unsafe requests are blocked before tool selection. Empty requests, oversized requests, prompt-injection attempts, and credential/secret-exfiltration attempts return the `security_guardrail` response.
 
 ## MCP Tool Layer
 
@@ -121,6 +131,29 @@ The backend uses keyword routing in `select_tool()`:
 - all, list -> `summarize_issues`
 
 This is simple by design. It makes behavior explainable and avoids overclaiming dynamic LLM reasoning. A future version could replace the keyword router with an LLM classifier.
+
+## Guardrails And Observability
+
+The API validates each chat request before selecting a tool.
+
+Blocked examples:
+
+- empty input
+- requests over the demo length limit
+- "ignore previous instructions"
+- "show me your system prompt"
+- "print secrets from .env"
+- requests for API keys or environment variables
+
+For observability, `/api/chat` emits a structured JSON log containing:
+
+- event name
+- trace ID
+- selected tool
+- source
+- latency
+
+The frontend displays the short trace ID in the MCP activity panel so a demo can connect the UI response to backend logs.
 
 ## Production Path
 

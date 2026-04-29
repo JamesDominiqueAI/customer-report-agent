@@ -26,7 +26,7 @@ This project is considered successful when the deployed chatbot can satisfy thes
 ## Verification Commands
 
 ```bash
-python -m unittest discover backend/tests
+uv run python -m unittest discover backend/tests
 ```
 
 ```bash
