@@ -20,6 +20,7 @@ type Activity = {
   source: string;
   dataset: string;
   responseTimeMs: number;
+  traceId?: string;
 };
 
 type SpeechRecognitionLike = {
@@ -174,7 +175,8 @@ export function ChatBox() {
         tool,
         source: data.source ?? "mcp",
         dataset: "data/complaints.json",
-        responseTimeMs: data.responseTimeMs ?? 0
+        responseTimeMs: data.latencyMs ?? data.responseTimeMs ?? 0,
+        traceId: data.traceId
       });
       if (tool === "generate_manager_report" || tool === "generate_action_plan") {
         setLastReport(assistantContent);
@@ -350,6 +352,10 @@ export function ChatBox() {
         <div>
           <span>Response Time</span>
           <strong>{activity ? `${activity.responseTimeMs}ms` : "--"}</strong>
+        </div>
+        <div>
+          <span>Trace</span>
+          <strong>{activity?.traceId ? activity.traceId.slice(0, 8) : "--"}</strong>
         </div>
         <button type="button" onClick={handleDownloadReport} disabled={!lastReport && messages.length <= 1}>
           Download Report

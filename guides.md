@@ -147,16 +147,9 @@ python --version
 git --version
 ```
 
-### 2. Check project secrets for deployment
+### 2. Check deployment URLs
 
-GitHub Actions production deployment needs:
-
-```text
-VERCEL_TOKEN
-VERCEL_ORG_ID
-VERCEL_PROJECT_ID
-NEXT_PUBLIC_API_URL
-```
+The current GitHub production workflow reports the already-live Vercel frontend as the `production` environment. It does not require Vercel secrets in GitHub Actions.
 
 ### 3. Check deployed URLs
 
@@ -291,16 +284,7 @@ Show:
 
 ### 1:10-2:00
 
-The project now uses GitHub Actions plus Vercel production deployment checks.
-
-Required GitHub secrets:
-
-```text
-VERCEL_TOKEN
-VERCEL_ORG_ID
-VERCEL_PROJECT_ID
-NEXT_PUBLIC_API_URL
-```
+The project now uses GitHub Actions to create a green GitHub `production` deployment check pointing at the live Vercel frontend.
 
 Then:
 
@@ -309,12 +293,7 @@ Then:
 3. confirm `.github/workflows/vercel-production.yml` creates a green `production` deployment
 4. open the Vercel URL and test a prompt
 
-If production deployment fails with Vercel project settings errors, check:
-
-- `VERCEL_ORG_ID`
-- `VERCEL_PROJECT_ID`
-- `VERCEL_TOKEN`
-- `.vercel` is ignored and not committed
+If production deployment fails, check the GitHub Actions `deployments: write` permission and the live frontend URL in `.github/workflows/vercel-production.yml`.
 
 ## Phase 6: MCP Server Proof
 

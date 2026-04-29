@@ -73,16 +73,7 @@ CORS_ORIGINS=https://frontend-nine-taupe-kl5d1l29m1.vercel.app
 
 ### Vercel Production
 
-`.github/workflows/vercel-production.yml` deploys the frontend to Vercel on pushes to `main` that touch the frontend or workflow file. It uses explicit Vercel IDs, so it does not depend on a committed `.vercel` directory.
-
-Required GitHub Actions secrets:
-
-```text
-VERCEL_TOKEN
-VERCEL_ORG_ID
-VERCEL_PROJECT_ID
-NEXT_PUBLIC_API_URL
-```
+`.github/workflows/vercel-production.yml` reports the live Vercel frontend URL as a GitHub `production` deployment on pushes to `main` that touch the frontend or workflow file. This avoids fragile Vercel CLI authentication in GitHub Actions while still giving the repository a green production check.
 
 Optional external MCP adapter secrets:
 
@@ -96,18 +87,11 @@ CUSTOMER_EMAIL_WEBHOOK_URL
 
 When these are absent, the external MCP tools return a safe "not configured" message for demos instead of failing the app.
 
-Where to add them:
+Where to add optional secrets:
 
 ```text
 GitHub repo -> Settings -> Secrets and variables -> Actions -> New repository secret
 ```
-
-Where to find them:
-
-- `VERCEL_TOKEN`: Vercel account settings -> Tokens
-- `VERCEL_ORG_ID`: Vercel project settings or local `.vercel/project.json` after `vercel link`
-- `VERCEL_PROJECT_ID`: Vercel project settings or local `.vercel/project.json` after `vercel link`
-- `NEXT_PUBLIC_API_URL`: deployed backend URL
 
 Do not commit `.vercel`. It is local project metadata and should stay ignored.
 
@@ -119,7 +103,7 @@ This error:
 Could not retrieve Project Settings. To link your Project, remove the `.vercel` directory and deploy again.
 ```
 
-usually means GitHub Actions is relying on stale Vercel project metadata. The workflow avoids that by reading `VERCEL_ORG_ID` and `VERCEL_PROJECT_ID` from GitHub Secrets.
+usually means GitHub Actions is relying on stale Vercel project metadata or a token without the correct team access. The workflow avoids that by creating the GitHub production deployment status directly and linking to the already-live Vercel URL.
 
 ## Production Hardening Path
 

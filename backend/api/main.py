@@ -3,6 +3,8 @@ from __future__ import annotations
 import os
 import sys
 import json
+import time
+import uuid
 from csv import DictWriter
 from io import StringIO
 from pathlib import Path
@@ -26,6 +28,7 @@ class ChatRequest(BaseModel):
 
 class ChatResponse(BaseModel):
     tool: Literal[
+        "security_guardrail",
         "get_urgent_complaints",
         "summarize_issues",
         "generate_manager_report",
@@ -39,6 +42,8 @@ class ChatResponse(BaseModel):
     ]
     response: str
     source: Literal["mcp", "direct"] = "direct"
+    traceId: str | None = None
+    latencyMs: int | None = None
 
 
 app = FastAPI(title="MCP Customer Report Agent API")
@@ -55,6 +60,51 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+
+MAX_MESSAGE_CHARS = 600
+BLOCKED_REQUEST_TERMS = [
+    "ignore previous",
+    "ignore all previous",
+    "system prompt",
+    "developer message",
+    "show me your prompt",
+    "print secrets",
+    "api key",
+    "secret key",
+    "environment variables",
+    ".env",
+    "vercel_token",
+]
+
+
+def security_guardrail_response(reason: str) -> ChatResponse:
+    return ChatResponse(
+        tool="security_guardrail",
+        source="direct",
+        response="\n".join(
+            [
+                "## Request Not Allowed",
+                f"{reason}",
+                "",
+                "I can help with customer complaints, urgent cases, sentiment, manager reports, action plans, and configured support operations tools.",
+            ]
+        ),
+    )
+
+
+def validate_question(question: str) -> ChatResponse | None:
+    if not question:
+        return security_guardrail_response("Please enter a customer-support question.")
+
+    if len(question) > MAX_MESSAGE_CHARS:
+        return security_guardrail_response("The request is too long for this demo workflow.")
+
+    normalized = question.lower()
+    if any(term in normalized for term in BLOCKED_REQUEST_TERMS):
+        return security_guardrail_response("I cannot reveal hidden instructions, credentials, or environment configuration.")
+
+    return None
 
 
 def select_tool(question: str) -> Literal[
@@ -150,6 +200,10 @@ async def call_mcp_tool(tool_name: str) -> Any:
 
 
 async def route_question_to_tool(question: str) -> ChatResponse:
+    blocked = validate_question(question)
+    if blocked:
+        return blocked
+
     tool_name = select_tool(question)
 
     try:
@@ -197,7 +251,23 @@ def export_csv(sentiment: str = "all", urgency: str = "all", query: str = ""):
 
 @app.post("/api/chat", response_model=ChatResponse)
 async def chat(request: ChatRequest):
-    return await route_question_to_tool(request.message.strip())
+    trace_id = str(uuid.uuid4())
+    started_at = time.perf_counter()
+    response = await route_question_to_tool(request.message.strip())
+    response.traceId = trace_id
+    response.latencyMs = round((time.perf_counter() - started_at) * 1000)
+    print(
+        json.dumps(
+            {
+                "event": "chat_request",
+                "traceId": trace_id,
+                "tool": response.tool,
+                "source": response.source,
+                "latencyMs": response.latencyMs,
+            }
+        )
+    )
+    return response
 
 
 if __name__ == "__main__":

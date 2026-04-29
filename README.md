@@ -14,11 +14,13 @@ This app provides a simple chat and voice interface for asking operational quest
 
 - Voice `Talk` input with transcript confirmation.
 - Tool activity log showing selected MCP tool, dataset, and response time.
+- Trace ID and backend latency returned for each chat request.
 - Download latest manager report as Markdown.
 - Search, sentiment filter, urgency filter, and clickable complaint detail view.
 - CSV export for the filtered complaint list.
 - Manager action plan tool with owners, SLA, and next steps.
 - Backend-powered dashboard summary cards.
+- Prompt-injection and secret-exfiltration guardrails for unsafe requests.
 
 ## Demo Prompts
 
@@ -119,7 +121,15 @@ Frontend: https://frontend-nine-taupe-kl5d1l29m1.vercel.app
 Backend:  https://customer-report-agent-api.vercel.app
 ```
 
-GitHub production deployment checks are handled by `.github/workflows/vercel-production.yml`. Add `VERCEL_TOKEN`, `VERCEL_ORG_ID`, `VERCEL_PROJECT_ID`, and `NEXT_PUBLIC_API_URL` as GitHub Actions repository secrets so pushes to `main` can deploy the frontend and mark the `production` environment green.
+GitHub production deployment checks are handled by `.github/workflows/vercel-production.yml`. The workflow reports the live Vercel frontend as the GitHub `production` environment so the repository shows a green production check.
+
+## Assessment Evidence
+
+- Success criteria: `guides/success_criteria.md`
+- Prompt and routing iteration log: `guides/prompt_iteration_log.md`
+- Architecture notes: `guides/architecture.md`
+- Deployment notes: `guides/deployment.md`
+- Video scripts: `guides/video_scripts.md`
 
 ## Submission Links
 
@@ -154,5 +164,5 @@ For a production build, add authentication, store complaints in a database, and 
 - Replace the static JSON file with a database.
 - Add authentication for support managers.
 - Add CSV upload for new complaint batches.
-- Add observability around MCP tool calls.
+- Send trace events to LangSmith, Langfuse, or OpenTelemetry instead of stdout.
 - Add deployment automation for the backend service.

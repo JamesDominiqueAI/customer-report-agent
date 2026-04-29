@@ -36,7 +36,14 @@ export async function postChatMessage(message: string) {
     throw new Error(`Chat request failed with ${response.status}`);
   }
 
-  const data = await response.json() as { response?: string; tool?: string; source?: string; error?: string };
+  const data = await response.json() as {
+    response?: string;
+    tool?: string;
+    source?: string;
+    traceId?: string;
+    latencyMs?: number;
+    error?: string;
+  };
   return {
     ...data,
     responseTimeMs: Math.round(performance.now() - startedAt)
