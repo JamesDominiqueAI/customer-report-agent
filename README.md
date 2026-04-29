@@ -84,8 +84,8 @@ Deploy `backend/` as the API service. For the deadline, Vercel is the primary fr
 
 ## Submission Links
 
-- GitHub repo: `TODO`
-- Live Vercel URL: `TODO`
+- GitHub repo: `https://github.com/JamesDominiqueAI/customer-report-agent`
+- Live Vercel URL: `https://frontend-ndku7yyz9-jamesragivedominique-6154s-projects.vercel.app`
 - Video 1: `TODO`
 - Video 2: `TODO`
 - Video 3: `TODO`
