@@ -2,10 +2,11 @@ from __future__ import annotations
 
 import os
 import sys
+import json
 from csv import DictWriter
 from io import StringIO
 from pathlib import Path
-from typing import Literal
+from typing import Any, Literal
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
@@ -16,6 +17,7 @@ PROJECT_ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(PROJECT_ROOT))
 
 from backend.mcp import tools  # noqa: E402
+from backend.mcp.server import mcp as mcp_server  # noqa: E402
 
 
 class ChatRequest(BaseModel):
@@ -32,6 +34,7 @@ class ChatResponse(BaseModel):
         "analyze_sentiment",
     ]
     response: str
+    source: Literal["mcp", "direct"] = "direct"
 
 
 app = FastAPI(title="MCP Customer Report Agent API")
@@ -50,64 +53,103 @@ app.add_middleware(
 )
 
 
-def route_question_to_tool(question: str) -> ChatResponse:
+def select_tool(question: str) -> Literal[
+    "get_all_complaints",
+    "get_urgent_complaints",
+    "summarize_issues",
+    "generate_manager_report",
+    "generate_action_plan",
+    "analyze_sentiment",
+]:
     normalized = question.lower()
 
     if any(term in normalized for term in ["action plan", "next steps", "sla", "owners"]):
-        return ChatResponse(
-            tool="generate_action_plan",
-            response=tools.generate_action_plan(),
-        )
+        return "generate_action_plan"
 
     if any(term in normalized for term in ["urgent", "priority", "critical"]):
-        urgent = tools.get_urgent_complaints()
+        return "get_urgent_complaints"
+
+    if any(term in normalized for term in ["report", "manager"]):
+        return "generate_manager_report"
+
+    if any(term in normalized for term in ["sentiment", "feeling", "tone"]):
+        return "analyze_sentiment"
+
+    if any(term in normalized for term in ["recurring", "top", "summarize", "summary"]):
+        return "summarize_issues"
+
+    if any(term in normalized for term in ["all", "list"]):
+        return "get_all_complaints"
+
+    return "generate_manager_report"
+
+
+def format_tool_response(tool_name: str, result: Any, source: Literal["mcp", "direct"]) -> ChatResponse:
+    if tool_name == "get_urgent_complaints":
         urgent_lines = "\n".join(
             f"- {item['id']}: {item['customer']} - {item['category']} - {item['text']}"
-            for item in urgent
+            for item in result
         )
         return ChatResponse(
             tool="get_urgent_complaints",
+            source=source,
             response="\n".join(
                 [
                     "## Urgent Complaints",
-                    f"{len(urgent)} complaints need high-priority attention.",
+                    f"{len(result)} complaints need high-priority attention.",
                     "",
                     urgent_lines,
                 ]
             ),
         )
 
-    if any(term in normalized for term in ["report", "manager"]):
-        return ChatResponse(
-            tool="generate_manager_report",
-            response=tools.generate_manager_report(),
-        )
-
-    if any(term in normalized for term in ["sentiment", "feeling", "tone"]):
-        return ChatResponse(tool="analyze_sentiment", response=tools.analyze_sentiment())
-
-    if any(term in normalized for term in ["recurring", "top", "summarize", "summary"]):
-        return ChatResponse(tool="summarize_issues", response=tools.summarize_issues())
-
-    if any(term in normalized for term in ["all", "list"]):
-        complaints = tools.get_all_complaints()
+    if tool_name == "get_all_complaints":
         return ChatResponse(
             tool="get_all_complaints",
+            source=source,
             response="\n".join(
                 [
                     "## All Complaints",
                     *[
                         f"- {item['id']}: {item['customer']} - {item['urgency']} - {item['category']}"
-                        for item in complaints
+                        for item in result
                     ],
                 ]
             ),
         )
 
-    return ChatResponse(
-        tool="generate_manager_report",
-        response=tools.generate_manager_report(),
-    )
+    return ChatResponse(tool=tool_name, source=source, response=str(result))
+
+
+def call_direct_tool(tool_name: str) -> Any:
+    return getattr(tools, tool_name)()
+
+
+async def call_mcp_tool(tool_name: str) -> Any:
+    result = await mcp_server.call_tool(tool_name, {})
+    if isinstance(result, dict):
+        return result.get("result", result)
+    if isinstance(result, list):
+        text_parts = [
+            content.text
+            for content in result
+            if getattr(content, "type", None) == "text"
+        ]
+        if tool_name in {"get_all_complaints", "get_urgent_complaints"}:
+            return [json.loads(text) for text in text_parts]
+        return "\n".join(text_parts)
+    return result
+
+
+async def route_question_to_tool(question: str) -> ChatResponse:
+    tool_name = select_tool(question)
+
+    try:
+        result = await call_mcp_tool(tool_name)
+        return format_tool_response(tool_name, result, "mcp")
+    except Exception:
+        result = call_direct_tool(tool_name)
+        return format_tool_response(tool_name, result, "direct")
 
 
 @app.get("/health")
@@ -146,8 +188,8 @@ def export_csv(sentiment: str = "all", urgency: str = "all", query: str = ""):
 
 
 @app.post("/api/chat", response_model=ChatResponse)
-def chat(request: ChatRequest):
-    return route_question_to_tool(request.message.strip())
+async def chat(request: ChatRequest):
+    return await route_question_to_tool(request.message.strip())
 
 
 if __name__ == "__main__":

@@ -44,6 +44,7 @@ Request flow:
 User voice/text
   -> frontend/components/ChatBox.tsx
   -> backend/api/main.py POST /api/chat
+  -> backend/mcp/server.py FastMCP tool registry
   -> backend/mcp/tools.py
   -> data/complaints.json
   -> response with selected MCP tool

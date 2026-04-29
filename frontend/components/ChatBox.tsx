@@ -17,6 +17,7 @@ type Message = {
 
 type Activity = {
   tool: string;
+  source: string;
   dataset: string;
   responseTimeMs: number;
 };
@@ -171,6 +172,7 @@ export function ChatBox() {
       ]);
       setActivity({
         tool,
+        source: data.source ?? "mcp",
         dataset: "data/complaints.json",
         responseTimeMs: data.responseTimeMs ?? 0
       });
@@ -340,6 +342,10 @@ export function ChatBox() {
         <div>
           <span>Dataset</span>
           <strong>{activity?.dataset ?? "data/complaints.json"}</strong>
+        </div>
+        <div>
+          <span>Source</span>
+          <strong>{activity?.source ?? "mcp"}</strong>
         </div>
         <div>
           <span>Response Time</span>

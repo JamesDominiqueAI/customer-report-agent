@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from mcp.server.fastmcp import FastMCP
 
-import tools
+from backend.mcp import tools
 
 mcp = FastMCP("customer-report-agent")
 
