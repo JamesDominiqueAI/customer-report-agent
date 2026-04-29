@@ -1,5 +1,13 @@
 export function getApiUrl() {
-  return process.env.NEXT_PUBLIC_API_URL || "http://localhost:8010";
+  if (process.env.NEXT_PUBLIC_API_URL) {
+    return process.env.NEXT_PUBLIC_API_URL;
+  }
+
+  if (typeof window !== "undefined" && window.location.hostname !== "localhost") {
+    return "https://customer-report-agent-api.vercel.app";
+  }
+
+  return "http://localhost:8010";
 }
 
 function getApiHeaders() {
