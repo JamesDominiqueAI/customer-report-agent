@@ -3,12 +3,13 @@
 ## Required Links
 
 - GitHub repo URL: `https://github.com/JamesDominiqueAI/customer-report-agent`
-- Live Vercel URL: `https://frontend-ndku7yyz9-jamesragivedominique-6154s-projects.vercel.app`
+- Live Vercel URL: `https://frontend-nine-taupe-kl5d1l29m1.vercel.app`
+- Public backend URL: `https://customer-report-agent-api.vercel.app`
 - Video 1, intro: `TODO`
 - Video 2, midway progress: `TODO`
 - Video 3, final demo: `TODO`
 
-Note: the frontend is deployed. The chat endpoint requires a public backend URL in `NEXT_PUBLIC_API_URL`; the current deployed frontend was built with the local backend URL.
+Note: the frontend has been redeployed with `NEXT_PUBLIC_API_URL=https://customer-report-agent-api.vercel.app`.
 
 ## Demo Prompts
 

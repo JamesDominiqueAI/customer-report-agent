@@ -2,4 +2,8 @@
 name = "customer-report-agent"
 version = "0.1.0"
 requires-python = ">=3.12"
-dependencies = []
+dependencies = [
+  "fastapi>=0.124.0",
+  "uvicorn>=0.38.0",
+  "mcp>=1.27.0",
+]

@@ -31,6 +31,21 @@ Docker command:
 docker compose up --build
 ```
 
+Vercel backend command from the repo root:
+
+```bash
+vercel --yes --env CORS_ORIGINS=https://your-frontend-url
+```
+
+The repo root exports the FastAPI app through `app.py`.
+
+Current deployed URLs:
+
+```text
+Frontend: https://frontend-nine-taupe-kl5d1l29m1.vercel.app
+Backend:  https://customer-report-agent-api.vercel.app
+```
+
 ## AWS Production Story
 
 For this deadline, deploy the frontend on Vercel to reduce friction and prove the product end to end. In production, the MCP service could run on AWS ECS, Lambda, or EC2, with a managed database and monitoring.

@@ -82,10 +82,17 @@ NEXT_PUBLIC_API_URL=https://your-backend-url
 
 Deploy `backend/` as the API service. For the deadline, Vercel is the primary frontend deployment target. In production, the MCP service can run on AWS ECS, Lambda, or EC2 with a managed database and monitoring.
 
+Current deployed URLs:
+
+```text
+Frontend: https://frontend-nine-taupe-kl5d1l29m1.vercel.app
+Backend:  https://customer-report-agent-api.vercel.app
+```
+
 ## Submission Links
 
 - GitHub repo: `https://github.com/JamesDominiqueAI/customer-report-agent`
-- Live Vercel URL: `https://frontend-ndku7yyz9-jamesragivedominique-6154s-projects.vercel.app`
+- Live Vercel URL: `https://frontend-nine-taupe-kl5d1l29m1.vercel.app`
 - Video 1: `TODO`
 - Video 2: `TODO`
 - Video 3: `TODO`
