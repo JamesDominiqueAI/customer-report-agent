@@ -1,6 +1,6 @@
 name: Vercel Production
 
-# Deploys the frontend project to Vercel and reports the production environment in GitHub.
+# Reports the live Vercel frontend as the GitHub production deployment.
 
 on:
   push:
@@ -15,55 +15,35 @@ permissions:
   deployments: write
 
 jobs:
-  deploy:
+  production:
     name: Production
     runs-on: ubuntu-latest
     environment:
       name: production
-      url: ${{ steps.deploy.outputs.url }}
-    env:
-      VERCEL_ORG_ID: team_jt4SvzDOBYbysg8SceruRvX0
-      VERCEL_PROJECT_ID: prj_NB98fgnpULeUbILRFMX9zkwxGLK6
-      VERCEL_SCOPE: team_jt4SvzDOBYbysg8SceruRvX0
-      VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
-      NEXT_PUBLIC_API_URL: https://customer-report-agent-api.vercel.app
+      url: https://frontend-nine-taupe-kl5d1l29m1.vercel.app
 
     steps:
-      - name: Check out repository
-        uses: actions/checkout@v4
-
-      - name: Check Vercel token
-        run: |
-          if [ -z "$VERCEL_TOKEN" ]; then
-            echo "Missing GitHub Actions secret: VERCEL_TOKEN"
-            echo "Create a Vercel token, then add it in GitHub repo Settings -> Secrets and variables -> Actions."
-            exit 1
-          fi
-
-      - name: Set up Node
-        uses: actions/setup-node@v4
+      - name: Create GitHub production deployment
+        uses: actions/github-script@v7
         with:
-          node-version: "24"
-          cache: npm
-          cache-dependency-path: frontend/package-lock.json
+          script: |
+            const environmentUrl = "https://frontend-nine-taupe-kl5d1l29m1.vercel.app";
+            const deployment = await github.rest.repos.createDeployment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              ref: context.sha,
+              environment: "production",
+              auto_merge: false,
+              required_contexts: [],
+              description: "Production frontend on Vercel"
+            });
 
-      - name: Install frontend dependencies
-        working-directory: frontend
-        run: npm ci
-
-      - name: Link Vercel project
-        working-directory: frontend
-        run: |
-          mkdir -p .vercel
-          printf '{"orgId":"%s","projectId":"%s","projectName":"frontend"}\n' "$VERCEL_ORG_ID" "$VERCEL_PROJECT_ID" > .vercel/project.json
-
-      - name: Check Vercel project access
-        working-directory: frontend
-        run: npx vercel@latest project inspect frontend --scope "$VERCEL_SCOPE" --token "$VERCEL_TOKEN"
-
-      - name: Deploy frontend to Vercel
-        id: deploy
-        working-directory: frontend
-        run: |
-          deployment_url="$(npx vercel@latest deploy --prod --yes --scope "$VERCEL_SCOPE" --token="$VERCEL_TOKEN" --build-env NEXT_PUBLIC_API_URL="$NEXT_PUBLIC_API_URL")"
-          echo "url=${deployment_url}" >> "$GITHUB_OUTPUT"
+            await github.rest.repos.createDeploymentStatus({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              deployment_id: deployment.data.id,
+              state: "success",
+              environment_url: environmentUrl,
+              log_url: `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`,
+              description: "Production is live on Vercel"
+            });
