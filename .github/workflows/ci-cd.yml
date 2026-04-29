@@ -38,3 +38,6 @@ jobs:
 
       - name: Check backend syntax
         run: python -m py_compile backend/api/main.py backend/mcp/tools.py backend/mcp/server.py
+
+      - name: Run backend tests
+        run: python -m unittest discover backend/tests
