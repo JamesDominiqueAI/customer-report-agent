@@ -24,7 +24,7 @@ jobs:
     env:
       VERCEL_ORG_ID: team_jt4SvzDOBYbysg8SceruRvX0
       VERCEL_PROJECT_ID: prj_NB98fgnpULeUbILRFMX9zkwxGLK6
-      VERCEL_SCOPE: jamesragivedominique-6154s-projects
+      VERCEL_SCOPE: team_jt4SvzDOBYbysg8SceruRvX0
       VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
       NEXT_PUBLIC_API_URL: https://customer-report-agent-api.vercel.app
 
