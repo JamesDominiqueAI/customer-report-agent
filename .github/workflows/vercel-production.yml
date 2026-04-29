@@ -1,5 +1,7 @@
 name: Vercel Production
 
+# Deploys the frontend project to Vercel and reports the production environment in GitHub.
+
 on:
   push:
     branches: [main]
