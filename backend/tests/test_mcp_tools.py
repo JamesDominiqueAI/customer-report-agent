@@ -38,6 +38,13 @@ class ComplaintToolTests(unittest.TestCase):
         self.assertIn("## Sentiment Overview", sentiment)
         self.assertIn("- negative:", sentiment)
 
+    def test_generate_action_plan_returns_priorities_and_sla(self):
+        action_plan = tools.generate_action_plan()
+
+        self.assertIn("## Manager Action Plan", action_plan)
+        self.assertIn("### Top 3 Priorities", action_plan)
+        self.assertIn("### SLA Recommendation", action_plan)
+
 
 if __name__ == "__main__":
     unittest.main()

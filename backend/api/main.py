@@ -2,11 +2,14 @@ from __future__ import annotations
 
 import os
 import sys
+from csv import DictWriter
+from io import StringIO
 from pathlib import Path
 from typing import Literal
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import PlainTextResponse
 from pydantic import BaseModel
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
@@ -25,6 +28,7 @@ class ChatResponse(BaseModel):
         "get_urgent_complaints",
         "summarize_issues",
         "generate_manager_report",
+        "generate_action_plan",
         "analyze_sentiment",
     ]
     response: str
@@ -48,6 +52,12 @@ app.add_middleware(
 
 def route_question_to_tool(question: str) -> ChatResponse:
     normalized = question.lower()
+
+    if any(term in normalized for term in ["action plan", "next steps", "sla", "owners"]):
+        return ChatResponse(
+            tool="generate_action_plan",
+            response=tools.generate_action_plan(),
+        )
 
     if any(term in normalized for term in ["urgent", "priority", "critical"]):
         urgent = tools.get_urgent_complaints()
@@ -103,6 +113,36 @@ def route_question_to_tool(question: str) -> ChatResponse:
 @app.get("/health")
 def health():
     return {"status": "ok"}
+
+
+@app.get("/api/summary")
+def summary():
+    return tools.get_complaint_summary()
+
+
+@app.get("/api/complaints")
+def complaints(sentiment: str = "all", urgency: str = "all", query: str = ""):
+    results = tools.search_complaints(sentiment=sentiment, urgency=urgency, query=query)
+    return [
+        {
+            **complaint,
+            "recommendedAction": tools.get_recommended_action(complaint),
+        }
+        for complaint in results
+    ]
+
+
+@app.get("/api/export.csv", response_class=PlainTextResponse)
+def export_csv(sentiment: str = "all", urgency: str = "all", query: str = ""):
+    results = tools.search_complaints(sentiment=sentiment, urgency=urgency, query=query)
+    output = StringIO()
+    writer = DictWriter(
+        output,
+        fieldnames=["id", "customer", "channel", "category", "urgency", "sentiment", "createdAt", "text"],
+    )
+    writer.writeheader()
+    writer.writerows(results)
+    return PlainTextResponse(output.getvalue(), media_type="text/csv")
 
 
 @app.post("/api/chat", response_model=ChatResponse)

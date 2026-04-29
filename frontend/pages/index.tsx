@@ -1,8 +1,18 @@
 import Head from "next/head";
+import { useEffect, useState } from "react";
 
 import { ChatBox } from "../components/ChatBox";
+import { ComplaintSummary, getComplaintSummary } from "../lib/api";
 
 export default function Home() {
+  const [summary, setSummary] = useState<ComplaintSummary | null>(null);
+
+  useEffect(() => {
+    getComplaintSummary()
+      .then(setSummary)
+      .catch(() => undefined);
+  }, []);
+
   return (
     <>
       <Head>
@@ -27,19 +37,19 @@ export default function Home() {
           <section className="stats-grid stats-grid-wide">
             <article className="stat-card">
               <span>Complaints</span>
-              <strong>16</strong>
+              <strong>{summary?.total ?? 16}</strong>
             </article>
             <article className="stat-card">
               <span>Urgent</span>
-              <strong>6</strong>
+              <strong>{summary?.urgent ?? 6}</strong>
             </article>
             <article className="stat-card">
-              <span>Tools</span>
-              <strong>5</strong>
+              <span>Negative Sentiment</span>
+              <strong>{summary?.negative ?? 0}</strong>
             </article>
             <article className="stat-card accent-card">
-              <span>Dataset</span>
-              <strong>JSON</strong>
+              <span>Top Issue</span>
+              <strong>{summary?.topCategory ?? "billing"}</strong>
             </article>
           </section>
 

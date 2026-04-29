@@ -28,6 +28,11 @@ def generate_manager_report():
 
 
 @mcp.tool()
+def generate_action_plan():
+    return tools.generate_action_plan()
+
+
+@mcp.tool()
 def analyze_sentiment():
     return tools.analyze_sentiment()
 

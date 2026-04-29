@@ -10,6 +10,16 @@ Support managers often receive raw complaint logs that are hard to scan quickly.
 
 This app provides a simple chat and voice interface for asking operational questions about customer complaints. The backend routes each request to MCP-style tools that retrieve and summarize a static complaint dataset, then returns a clean markdown response for the manager.
 
+## Demo Features
+
+- Voice `Talk` input with transcript confirmation.
+- Tool activity log showing selected MCP tool, dataset, and response time.
+- Download latest manager report as Markdown.
+- Search, sentiment filter, urgency filter, and clickable complaint detail view.
+- CSV export for the filtered complaint list.
+- Manager action plan tool with owners, SLA, and next steps.
+- Backend-powered dashboard summary cards.
+
 ## Demo Prompts
 
 - Summarize today's customer complaints.
@@ -45,6 +55,7 @@ The app keeps the demo reliable by using deterministic MCP tools over a static J
 - `get_urgent_complaints`
 - `summarize_issues`
 - `generate_manager_report`
+- `generate_action_plan`
 - `analyze_sentiment`
 
 ## Run Locally
