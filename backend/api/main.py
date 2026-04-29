@@ -26,12 +26,16 @@ class ChatRequest(BaseModel):
 
 class ChatResponse(BaseModel):
     tool: Literal[
-        "get_all_complaints",
         "get_urgent_complaints",
         "summarize_issues",
         "generate_manager_report",
         "generate_action_plan",
         "analyze_sentiment",
+        "lookup_crm_customer",
+        "create_ticket_escalation",
+        "check_service_status",
+        "send_slack_alert",
+        "send_customer_email_batch",
     ]
     response: str
     source: Literal["mcp", "direct"] = "direct"
@@ -54,14 +58,33 @@ app.add_middleware(
 
 
 def select_tool(question: str) -> Literal[
-    "get_all_complaints",
     "get_urgent_complaints",
     "summarize_issues",
     "generate_manager_report",
     "generate_action_plan",
     "analyze_sentiment",
+    "lookup_crm_customer",
+    "create_ticket_escalation",
+    "check_service_status",
+    "send_slack_alert",
+    "send_customer_email_batch",
 ]:
     normalized = question.lower()
+
+    if any(term in normalized for term in ["crm", "customer profile", "customer record", "account history"]):
+        return "lookup_crm_customer"
+
+    if any(term in normalized for term in ["ticket", "escalate", "escalation", "create case"]):
+        return "create_ticket_escalation"
+
+    if any(term in normalized for term in ["status page", "service status", "outage", "api status"]):
+        return "check_service_status"
+
+    if any(term in normalized for term in ["slack", "team alert", "notify team", "send alert"]):
+        return "send_slack_alert"
+
+    if any(term in normalized for term in ["email customer", "send email", "customer email", "email batch"]):
+        return "send_customer_email_batch"
 
     if any(term in normalized for term in ["action plan", "next steps", "sla", "owners"]):
         return "generate_action_plan"
@@ -79,7 +102,7 @@ def select_tool(question: str) -> Literal[
         return "summarize_issues"
 
     if any(term in normalized for term in ["all", "list"]):
-        return "get_all_complaints"
+        return "summarize_issues"
 
     return "generate_manager_report"
 
@@ -103,21 +126,6 @@ def format_tool_response(tool_name: str, result: Any, source: Literal["mcp", "di
             ),
         )
 
-    if tool_name == "get_all_complaints":
-        return ChatResponse(
-            tool="get_all_complaints",
-            source=source,
-            response="\n".join(
-                [
-                    "## All Complaints",
-                    *[
-                        f"- {item['id']}: {item['customer']} - {item['urgency']} - {item['category']}"
-                        for item in result
-                    ],
-                ]
-            ),
-        )
-
     return ChatResponse(tool=tool_name, source=source, response=str(result))
 
 
@@ -135,7 +143,7 @@ async def call_mcp_tool(tool_name: str) -> Any:
             for content in result
             if getattr(content, "type", None) == "text"
         ]
-        if tool_name in {"get_all_complaints", "get_urgent_complaints"}:
+        if tool_name == "get_urgent_complaints":
             return [json.loads(text) for text in text_parts]
         return "\n".join(text_parts)
     return result

@@ -45,6 +45,36 @@ class ComplaintToolTests(unittest.TestCase):
         self.assertIn("### Top 3 Priorities", action_plan)
         self.assertIn("### SLA Recommendation", action_plan)
 
+    def test_lookup_crm_customer_returns_safe_unconfigured_message(self):
+        crm = tools.lookup_crm_customer()
+
+        self.assertIn("## CRM Customer Lookup", crm)
+        self.assertIn("not configured", crm)
+
+    def test_create_ticket_escalation_returns_safe_unconfigured_message(self):
+        ticket = tools.create_ticket_escalation()
+
+        self.assertIn("## Ticket Escalation", ticket)
+        self.assertIn("not configured", ticket)
+
+    def test_check_service_status_returns_safe_unconfigured_message(self):
+        status = tools.check_service_status()
+
+        self.assertIn("## External Service Status", status)
+        self.assertIn("not configured", status)
+
+    def test_send_slack_alert_returns_safe_unconfigured_message(self):
+        alert = tools.send_slack_alert()
+
+        self.assertIn("## Slack Support Alert", alert)
+        self.assertIn("not configured", alert)
+
+    def test_send_customer_email_batch_returns_safe_unconfigured_message(self):
+        email_batch = tools.send_customer_email_batch()
+
+        self.assertIn("## Customer Email Batch", email_batch)
+        self.assertIn("not configured", email_batch)
+
 
 if __name__ == "__main__":
     unittest.main()

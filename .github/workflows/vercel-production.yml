@@ -1,6 +1,6 @@
 name: Vercel Production
 
-# Reports the live Vercel frontend as the GitHub production deployment.
+# Deploys the frontend to Vercel and reports the live URL as the GitHub production deployment.
 
 on:
   push:
@@ -21,13 +21,41 @@ jobs:
     environment:
       name: production
       url: https://frontend-nine-taupe-kl5d1l29m1.vercel.app
+    env:
+      VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+      VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+      VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+      NEXT_PUBLIC_API_URL: ${{ secrets.NEXT_PUBLIC_API_URL }}
 
     steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install frontend dependencies
+        working-directory: frontend
+        run: npm ci
+
+      - name: Deploy frontend to Vercel
+        id: vercel
+        working-directory: frontend
+        run: |
+          npx vercel@latest pull --yes --environment=production --token="$VERCEL_TOKEN"
+          deployment_url="$(npx vercel@latest deploy --prod --yes --token="$VERCEL_TOKEN" --build-env NEXT_PUBLIC_API_URL="$NEXT_PUBLIC_API_URL" | tail -n 1)"
+          echo "deployment_url=$deployment_url" >> "$GITHUB_OUTPUT"
+          echo "Deployment URL: $deployment_url"
+
       - name: Create GitHub production deployment
         uses: actions/github-script@v7
         with:
           script: |
-            const environmentUrl = "https://frontend-nine-taupe-kl5d1l29m1.vercel.app";
+            const environmentUrl = "${{ steps.vercel.outputs.deployment_url }}";
             const deployment = await github.rest.repos.createDeployment({
               owner: context.repo.owner,
               repo: context.repo.repo,

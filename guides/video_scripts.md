@@ -4,40 +4,62 @@
 
 Show:
 
-- Project title
-- Problem
-- Solution
-- Architecture sketch
-- Deployment target
+- project title
+- problem statement
+- target user
+- architecture sketch
+- planned deployment target
 
 Script:
 
-"I am building an MCP-powered Customer Report Agent Chatbot. The goal is to help support teams turn raw customer complaints into instant summaries and manager-ready reports. The app will use MCP tools to retrieve complaints, identify urgent cases, summarize recurring issues, and generate a report. I will deploy the frontend on Vercel for speed, and I can describe AWS as the production path."
+"I am building an MCP-powered Customer Report Agent. The problem is that support managers often receive raw complaint queues that are hard to scan quickly. The app will let a manager ask natural-language or voice questions such as 'show urgent complaints' or 'generate a manager report.' Behind the scenes, the backend routes those requests to MCP-style tools that read a complaint dataset, summarize issues, identify urgent cases, analyze sentiment, and return a business-ready response. The frontend will run on Vercel, and the backend will run as a separate FastAPI service."
 
 ## Video 2: Midway Progress
 
 Show:
 
-- Project folders
-- Complaint dataset
-- MCP tools
-- UI connected to backend
-- Remaining deployment steps
+- repo structure
+- `data/complaints.json`
+- `backend/mcp/tools.py`
+- `backend/api/main.py`
+- frontend chat screen
+- GitHub Actions files
 
 Script:
 
-"At this stage, the project structure is ready, the complaint dataset is prepared, and the MCP server exposes the core tools. The UI is connected to the backend, and I am now polishing the final agent response and preparing deployment."
+"At this stage, the core project structure is implemented. The complaint dataset is stored in JSON, the MCP tool layer exposes functions for urgent complaints, issue summaries, sentiment analysis, manager reports, and action plans, and the FastAPI backend routes chat requests to the correct tool. The frontend is connected to the API and includes chat, demo prompts, voice input, tool activity, complaint filters, CSV export, and report download. I am now polishing the deployment workflow and documentation so the project feels like a real capstone rather than a local-only prototype."
 
 ## Video 3: Final Demo
 
 Show:
 
-- Live deployed URL
-- Two or three demo prompts
-- Voice `Talk` button
-- MCP tool labels in responses
-- GitHub repository
+- live Vercel frontend
+- dashboard summary cards
+- complaint browser filters
+- chat prompt buttons
+- voice `Talk` button
+- MCP activity panel
+- downloaded report
+- GitHub repository and green deployment
 
 Script:
 
-"This is the final MCP Customer Report Agent Chatbot. A user can ask for urgent complaints, recurring issues, or a manager-ready summary. Behind the scenes, the app uses MCP tools to retrieve and process complaint data, then returns a business-friendly report. The code is on GitHub and the app is deployed on Vercel."
+"This is the final MCP Customer Report Agent. A support manager can open the deployed app and ask for urgent complaints, recurring issues, sentiment, an action plan, or a manager-ready report. I can also use the Talk button to send a voice request. Each response shows which MCP tool was selected and whether the answer came through MCP or the direct fallback path. The complaint browser lets me search, filter by sentiment or urgency, inspect recommended actions, and export a CSV. The project includes a FastAPI backend, deterministic MCP tools, a Next.js frontend, tests, Docker support, deployment documentation, and GitHub Actions for CI and production deployment."
+
+## Short Demo Prompt Sequence
+
+Use these prompts during the final walkthrough:
+
+```text
+Summarize today's customer complaints.
+Show only urgent complaints.
+What are the top recurring customer issues?
+Analyze customer sentiment.
+Generate a manager action plan.
+Look up urgent customers in the CRM.
+Create an escalation ticket for urgent complaints.
+Check the external service status.
+Send a Slack team alert.
+Email customers about urgent complaints.
+Generate a manager-ready customer support report.
+```

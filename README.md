@@ -26,6 +26,11 @@ This app provides a simple chat and voice interface for asking operational quest
 - Show only urgent complaints.
 - What are the top recurring customer issues?
 - Generate a manager-ready customer support report.
+- Look up urgent customers in the CRM.
+- Create an escalation ticket for urgent complaints.
+- Check the external service status.
+- Send a Slack team alert.
+- Email customers about urgent complaints.
 
 ## Architecture
 
@@ -50,14 +55,27 @@ User voice/text
   -> response with selected MCP tool
 ```
 
-The app keeps the demo reliable by using deterministic MCP tools over a static JSON dataset. The required tools are implemented in `backend/mcp/tools.py` and exposed through `backend/mcp/server.py`:
+The app keeps the demo reliable by using 5 internal MCP tools over a static JSON dataset and 5 external MCP adapter tools for production-style integrations. The tools are implemented in `backend/mcp/tools.py` and exposed through `backend/mcp/server.py`.
 
-- `get_all_complaints`
+Internal MCP tools:
+
 - `get_urgent_complaints`
 - `summarize_issues`
 - `generate_manager_report`
 - `generate_action_plan`
 - `analyze_sentiment`
+
+External MCP adapter tools:
+
+- `lookup_crm_customer`
+- `create_ticket_escalation`
+- `check_service_status`
+- `send_slack_alert`
+- `send_customer_email_batch`
+
+The external adapters use optional webhook/status environment variables. If they are not configured, the tools return a safe not-configured response so the demo remains stable.
+
+`get_all_complaints()` still exists as an internal helper for data access and tests, but it is not registered as an MCP tool.
 
 ## Run Locally
 
@@ -101,7 +119,7 @@ Frontend: https://frontend-nine-taupe-kl5d1l29m1.vercel.app
 Backend:  https://customer-report-agent-api.vercel.app
 ```
 
-GitHub production deployment checks are handled by `.github/workflows/vercel-production.yml`. Add `VERCEL_TOKEN` as a GitHub Actions repository secret so pushes to `main` can deploy the frontend and mark the `production` environment green.
+GitHub production deployment checks are handled by `.github/workflows/vercel-production.yml`. Add `VERCEL_TOKEN`, `VERCEL_ORG_ID`, `VERCEL_PROJECT_ID`, and `NEXT_PUBLIC_API_URL` as GitHub Actions repository secrets so pushes to `main` can deploy the frontend and mark the `production` environment green.
 
 ## Submission Links
 

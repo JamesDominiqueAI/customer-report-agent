@@ -1,6 +1,9 @@
 from __future__ import annotations
 
 import json
+import os
+import urllib.error
+import urllib.request
 from collections import Counter
 from pathlib import Path
 from typing import Any
@@ -14,6 +17,73 @@ def _load_complaints() -> list[dict[str, Any]]:
 
 def _format_counts(counter: Counter[str]) -> str:
     return "\n".join(f"- {label}: {count}" for label, count in counter.most_common())
+
+
+def _post_external_json(url: str | None, payload: dict[str, Any], service_name: str) -> str:
+    if not url:
+        return "\n".join(
+            [
+                f"## {service_name}",
+                "External integration is not configured.",
+                "Set the matching environment variable to enable the live external call.",
+            ]
+        )
+
+    request = urllib.request.Request(
+        url,
+        data=json.dumps(payload).encode("utf-8"),
+        headers={"Content-Type": "application/json"},
+        method="POST",
+    )
+    try:
+        with urllib.request.urlopen(request, timeout=8) as response:
+            body = response.read().decode("utf-8")[:1200]
+            return "\n".join(
+                [
+                    f"## {service_name}",
+                    f"External call completed with HTTP {response.status}.",
+                    "",
+                    body,
+                ]
+            )
+    except (urllib.error.URLError, TimeoutError) as exc:
+        return "\n".join(
+            [
+                f"## {service_name}",
+                "External call failed.",
+                str(exc),
+            ]
+        )
+
+
+def _get_external_text(url: str | None, service_name: str) -> str:
+    if not url:
+        return "\n".join(
+            [
+                f"## {service_name}",
+                "External integration is not configured.",
+                "Set the matching environment variable to enable the live external call.",
+            ]
+        )
+    try:
+        with urllib.request.urlopen(url, timeout=8) as response:
+            body = response.read().decode("utf-8")[:1200]
+            return "\n".join(
+                [
+                    f"## {service_name}",
+                    f"External call completed with HTTP {response.status}.",
+                    "",
+                    body,
+                ]
+            )
+    except (urllib.error.URLError, TimeoutError) as exc:
+        return "\n".join(
+            [
+                f"## {service_name}",
+                "External call failed.",
+                str(exc),
+            ]
+        )
 
 
 def get_all_complaints() -> list[dict[str, Any]]:
@@ -178,4 +248,66 @@ def analyze_sentiment() -> str:
             "",
             "Negative sentiment is the largest group, mostly driven by billing, delivery, access, and reliability complaints.",
         ]
+    )
+
+
+def lookup_crm_customer() -> str:
+    urgent = get_urgent_complaints()
+    customer_ids = [item["customer"] for item in urgent[:3]]
+    return _post_external_json(
+        os.getenv("CRM_LOOKUP_WEBHOOK_URL"),
+        {"customers": customer_ids, "reason": "high_urgency_complaint_review"},
+        "CRM Customer Lookup",
+    )
+
+
+def create_ticket_escalation() -> str:
+    urgent = get_urgent_complaints()
+    return _post_external_json(
+        os.getenv("TICKETING_WEBHOOK_URL"),
+        {
+            "title": "High urgency customer complaint escalation",
+            "complaint_ids": [item["id"] for item in urgent],
+            "count": len(urgent),
+            "priority": "high",
+        },
+        "Ticket Escalation",
+    )
+
+
+def check_service_status() -> str:
+    return _get_external_text(
+        os.getenv("STATUS_PAGE_URL"),
+        "External Service Status",
+    )
+
+
+def send_slack_alert() -> str:
+    urgent = get_urgent_complaints()
+    return _post_external_json(
+        os.getenv("SLACK_WEBHOOK_URL"),
+        {
+            "text": f"{len(urgent)} high-urgency customer complaints need same-day review.",
+            "complaints": [item["id"] for item in urgent[:6]],
+        },
+        "Slack Support Alert",
+    )
+
+
+def send_customer_email_batch() -> str:
+    urgent = get_urgent_complaints()
+    return _post_external_json(
+        os.getenv("CUSTOMER_EMAIL_WEBHOOK_URL"),
+        {
+            "template": "urgent_complaint_followup",
+            "recipients": [
+                {
+                    "customer": item["customer"],
+                    "complaint_id": item["id"],
+                    "category": item["category"],
+                }
+                for item in urgent[:5]
+            ],
+        },
+        "Customer Email Batch",
     )

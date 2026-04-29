@@ -25,11 +25,21 @@ User voice/text
 
 ## MCP Tools
 
-- `get_all_complaints`
+Internal complaint-analysis tools:
+
 - `get_urgent_complaints`
 - `summarize_issues`
 - `generate_manager_report`
+- `generate_action_plan`
 - `analyze_sentiment`
+
+External integration adapter tools:
+
+- `lookup_crm_customer`
+- `create_ticket_escalation`
+- `check_service_status`
+- `send_slack_alert`
+- `send_customer_email_batch`
 
 ## Demo Flow
 
