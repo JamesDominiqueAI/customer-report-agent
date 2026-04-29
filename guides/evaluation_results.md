@@ -62,4 +62,4 @@ Expected outcomes:
 
 ## Evaluation Conclusion
 
-The current implementation prioritizes reliable, deterministic tool behavior over open-ended LLM generation. That tradeoff makes the business flows testable, keeps the live demo stable, and reduces prompt-injection risk. The remaining production gap is hosted observability and real authentication, which are listed as future improvements.
+The current implementation prioritizes reliable, deterministic tool behavior over open-ended LLM generation. That tradeoff makes the business flows testable, keeps the live demo stable, and reduces prompt-injection risk. The remaining production gaps are hosted observability and full identity-based authentication. The app already includes optional shared API key protection for demo hardening.

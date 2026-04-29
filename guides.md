@@ -103,6 +103,49 @@ Expected behavior:
 - response includes `traceId`
 - response includes `latencyMs`
 
+## Test Coverage
+
+Current backend test suite:
+
+```text
+20 tests passing
+```
+
+Run command:
+
+```bash
+uv run python -m unittest discover backend/tests
+```
+
+The tests cover:
+
+- static complaint dataset loading
+- urgent complaint filtering
+- issue summary sections
+- manager report sections
+- sentiment summary
+- manager action plan
+- safe fallback behavior for unconfigured external adapters
+- deterministic routing for business requests
+- empty input guardrail
+- prompt-injection and secret-exfiltration guardrails
+- `/api/chat` trace ID and latency response fields
+- `/api/export.csv` CSV behavior
+- optional `SUPPORT_MANAGER_API_KEY` enforcement
+
+Frontend build verification:
+
+```bash
+cd frontend
+npm run build
+```
+
+Current frontend result:
+
+```text
+Next.js production build passes
+```
+
 ## Demo Prompts
 
 Core business prompts:
@@ -181,16 +224,31 @@ Close with:
 ## Known Limitations
 
 - The dataset is static JSON, not a live database.
-- Authentication is not implemented yet.
+- Full identity-based login is not implemented yet. Optional shared API key protection is available through `SUPPORT_MANAGER_API_KEY`.
 - Observability is trace IDs and structured stdout, not LangSmith/Langfuse/OpenTelemetry.
 - External adapters are webhook-ready but not connected to real CRM/ticketing/Slack/email services.
 - The production check links to the current Vercel deployment rather than running Vercel CLI inside GitHub Actions.
+
+## Final Submission Checklist
+
+- GitHub repo is public and accessible.
+- Frontend URL opens.
+- Backend `/health` returns `{"status":"ok"}`.
+- CI is green.
+- GitHub production check is green or documented.
+- `uv run python -m unittest discover backend/tests` passes.
+- `npm run build` passes.
+- README contains live links and architecture summary.
+- `guides/success_criteria.md` is complete.
+- `guides/evaluation_results.md` is complete.
+- `guides/assessment_rubric_map.md` is complete.
+- Video 1, Video 2, and Video 3 are recorded and linked in `SUBMISSION_CHECKLIST.md`.
 
 ## Next Production Improvements
 
 Priority order:
 
-1. Add authentication for support managers.
+1. Replace shared API key protection with identity-based authentication for support managers.
 2. Move complaints from JSON to Postgres, DynamoDB, or a ticketing API.
 3. Send trace events to LangSmith, Langfuse, or OpenTelemetry.
 4. Connect real CRM, ticketing, Slack, and email services.

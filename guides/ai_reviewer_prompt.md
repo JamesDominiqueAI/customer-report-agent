@@ -9,7 +9,7 @@ Project name:
 MCP Customer Report Agent
 
 Project summary:
-This is an MCP-powered customer support reporting app. It turns a static dataset of customer complaints into urgent complaint lists, recurring issue summaries, sentiment snapshots, manager action plans, CSV exports, and manager-ready reports. The backend registers 5 internal MCP tools for complaint analysis and 5 external MCP adapter tools for CRM lookup, ticket escalation, service status checks, Slack alerts, and customer email batches. The frontend is a Next.js Pages Router app with chat, voice input, read-aloud responses, demo prompts, complaint filters, a detail view, CSV export, and report download. The backend is FastAPI and routes natural-language manager questions to MCP-style tools registered with FastMCP. The core analysis is deterministic and uses data/complaints.json, which makes the demo reliable and testable. If an external integration URL is not configured, the adapter returns a safe not-configured response instead of crashing.
+This is an MCP-powered customer support reporting app. It turns a static dataset of customer complaints into urgent complaint lists, recurring issue summaries, sentiment snapshots, manager action plans, CSV exports, and manager-ready reports. The backend registers 5 internal MCP tools for complaint analysis and 5 external MCP adapter tools for CRM lookup, ticket escalation, service status checks, Slack alerts, and customer email batches. The frontend is a Next.js Pages Router app with chat, voice input, read-aloud responses, demo prompts, complaint filters, a detail view, CSV export, report download, and an MCP activity panel showing tool/source/trace/latency. The backend is FastAPI and routes natural-language manager questions to MCP-style tools registered with FastMCP. The core analysis is deterministic and uses data/complaints.json, which makes the demo reliable and testable. If an external integration URL is not configured, the adapter returns a safe not-configured response instead of crashing. The API includes guardrails for empty, oversized, prompt-injection, and secret-exfiltration requests, plus optional shared API key protection through SUPPORT_MANAGER_API_KEY.
 
 Architecture to evaluate:
 - Frontend: Next.js, React, TypeScript
@@ -17,7 +17,7 @@ Architecture to evaluate:
 - MCP layer: FastMCP server and deterministic complaint tools
 - Data: static JSON complaint dataset
 - Deployment: Vercel frontend, separate FastAPI backend, GitHub Actions CI and Vercel production workflow
-- Tests: backend unit tests for MCP tools/API behavior
+- Tests: 20 backend tests for MCP tools, routing, API behavior, guardrails, CSV export, and optional API key enforcement
 
 Important files:
 - README.md
@@ -55,5 +55,5 @@ Give:
 - interview talking points I should emphasize
 - a short paragraph I can use to describe the project in a portfolio
 
-Be honest and concrete. Do not only praise it. Point out gaps such as static data, simple keyword routing, no authentication, limited observability, and the fact that the backend deployment is still simpler than a full production architecture. Also recognize that deterministic tools and MCP fallback make the demo reliable and explainable.
+Be honest and concrete. Do not only praise it. Point out gaps such as static data, simple keyword routing, shared API key auth instead of full identity login, limited hosted observability, and the fact that the backend deployment is still simpler than a full production architecture. Also recognize that deterministic tools, guardrails, tests, optional auth, and MCP fallback make the demo reliable and explainable.
 ```
