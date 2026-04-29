@@ -101,6 +101,8 @@ Frontend: https://frontend-nine-taupe-kl5d1l29m1.vercel.app
 Backend:  https://customer-report-agent-api.vercel.app
 ```
 
+GitHub production deployment checks are handled by `.github/workflows/vercel-production.yml`. Add `VERCEL_TOKEN` as a GitHub Actions repository secret so pushes to `main` can deploy the frontend and mark the `production` environment green.
+
 ## Submission Links
 
 - GitHub repo: `https://github.com/JamesDominiqueAI/customer-report-agent`
