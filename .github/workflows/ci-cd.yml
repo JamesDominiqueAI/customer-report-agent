@@ -36,6 +36,9 @@ jobs:
         with:
           python-version: "3.12"
 
+      - name: Install backend dependencies
+        run: python -m pip install -r requirements.txt
+
       - name: Check backend syntax
         run: python -m py_compile backend/api/main.py backend/mcp/tools.py backend/mcp/server.py
 
