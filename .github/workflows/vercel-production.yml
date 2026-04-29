@@ -22,11 +22,20 @@ jobs:
     env:
       VERCEL_ORG_ID: team_jt4SvzDOBYbysg8SceruRvX0
       VERCEL_PROJECT_ID: prj_NB98fgnpULeUbILRFMX9zkwxGLK6
+      VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
       NEXT_PUBLIC_API_URL: https://customer-report-agent-api.vercel.app
 
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
+
+      - name: Check Vercel token
+        run: |
+          if [ -z "$VERCEL_TOKEN" ]; then
+            echo "Missing GitHub Actions secret: VERCEL_TOKEN"
+            echo "Create a Vercel token, then add it in GitHub repo Settings -> Secrets and variables -> Actions."
+            exit 1
+          fi
 
       - name: Set up Node
         uses: actions/setup-node@v4
@@ -41,15 +50,15 @@ jobs:
 
       - name: Pull Vercel project settings
         working-directory: frontend
-        run: npx vercel@latest pull --yes --environment=production --token="${{ secrets.VERCEL_TOKEN }}"
+        run: npx vercel@latest pull --yes --environment=production --token="$VERCEL_TOKEN"
 
       - name: Build frontend
         working-directory: frontend
-        run: npx vercel@latest build --prod --token="${{ secrets.VERCEL_TOKEN }}"
+        run: npx vercel@latest build --prod --token="$VERCEL_TOKEN"
 
       - name: Deploy frontend to Vercel
         id: deploy
         working-directory: frontend
         run: |
-          deployment_url="$(npx vercel@latest deploy --prebuilt --prod --token="${{ secrets.VERCEL_TOKEN }}")"
+          deployment_url="$(npx vercel@latest deploy --prebuilt --prod --token="$VERCEL_TOKEN")"
           echo "url=${deployment_url}" >> "$GITHUB_OUTPUT"
