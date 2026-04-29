@@ -9,7 +9,7 @@ This file maps the Wakanda assessment criteria to concrete project evidence.
 - Edge cases: `backend/api/main.py` guardrails and `backend/tests/test_mcp_tools.py`
 - Tests: `uv run python -m unittest discover backend/tests`
 - Evaluation: `guides/evaluation_results.md` summarizes test results, manual demo checks, and conclusions.
-- Security: unsafe requests return `security_guardrail` before tool selection.
+- Security: unsafe requests return `security_guardrail` before tool selection; optional API key auth is available through `SUPPORT_MANAGER_API_KEY`.
 - Observability: `/api/chat` returns `traceId` and `latencyMs`; backend emits structured JSON logs.
 
 ## Engineering And Production Quality
@@ -33,7 +33,7 @@ This file maps the Wakanda assessment criteria to concrete project evidence.
 
 ## Current Gaps To Mention Honestly
 
-- No real user authentication yet.
+- Full user identity/authentication is not implemented yet; the project includes optional API key protection for demo hardening.
 - Observability is structured logs and trace IDs, not a hosted tracing dashboard.
 - External adapters are webhook-ready but not connected to real CRM/ticketing/Slack/email systems.
 - Static JSON data should become a database or support-system integration in production.

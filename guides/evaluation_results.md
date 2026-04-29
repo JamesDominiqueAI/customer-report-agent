@@ -11,7 +11,7 @@ uv run python -m unittest discover backend/tests
 Current result:
 
 ```text
-18 tests passing
+20 tests passing
 ```
 
 ## Frontend Build Command
@@ -38,6 +38,8 @@ Next.js production build passes
 - Prompt-injection and credential-exfiltration requests return `security_guardrail`.
 - `/api/chat` returns the selected tool, trace ID, and latency.
 - `/api/export.csv` returns filtered complaint data as CSV.
+- Optional API key enforcement blocks protected routes without `X-Support-Manager-Key`.
+- Optional API key enforcement allows protected routes with the correct header.
 
 ## Manual Demo Checks
 

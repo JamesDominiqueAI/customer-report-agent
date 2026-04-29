@@ -35,6 +35,14 @@ NEXT_PUBLIC_API_URL
 
 The API client in `frontend/lib/api.ts` reads `NEXT_PUBLIC_API_URL` and falls back to `http://localhost:8010` for local development.
 
+Optional demo auth variable:
+
+```text
+NEXT_PUBLIC_SUPPORT_MANAGER_API_KEY
+```
+
+Set this only if the backend also has `SUPPORT_MANAGER_API_KEY` configured.
+
 Verify the deployed frontend by opening the live URL and running these prompts:
 
 - `Show only urgent complaints.`
@@ -70,6 +78,14 @@ For production, configure CORS so the backend accepts the deployed frontend orig
 ```text
 CORS_ORIGINS=https://frontend-nine-taupe-kl5d1l29m1.vercel.app
 ```
+
+Optional API key protection:
+
+```text
+SUPPORT_MANAGER_API_KEY=your-shared-demo-key
+```
+
+When this variable is set, protected backend routes require the `X-Support-Manager-Key` header. When it is unset, the public capstone demo remains open.
 
 ## GitHub Actions
 

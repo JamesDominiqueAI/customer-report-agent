@@ -112,5 +112,6 @@ Expected result includes:
 - Success criteria
 - Prompt/routing iteration log
 - Security guardrails and adversarial test coverage
+- Optional API key auth coverage
 - Observability evidence with trace ID and latency
 - Future improvements

@@ -2,6 +2,22 @@ export function getApiUrl() {
   return process.env.NEXT_PUBLIC_API_URL || "http://localhost:8010";
 }
 
+function getApiHeaders() {
+  const headers: Record<string, string> = {
+    "Content-Type": "application/json"
+  };
+  const supportManagerKey = process.env.NEXT_PUBLIC_SUPPORT_MANAGER_API_KEY;
+  if (supportManagerKey) {
+    headers["X-Support-Manager-Key"] = supportManagerKey;
+  }
+  return headers;
+}
+
+function getOptionalAuthHeaders() {
+  const supportManagerKey = process.env.NEXT_PUBLIC_SUPPORT_MANAGER_API_KEY;
+  return supportManagerKey ? { "X-Support-Manager-Key": supportManagerKey } : undefined;
+}
+
 export type Complaint = {
   id: string;
   customer: string;
@@ -26,9 +42,7 @@ export async function postChatMessage(message: string) {
   const startedAt = performance.now();
   const response = await fetch(`${getApiUrl()}/api/chat`, {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json"
-    },
+    headers: getApiHeaders(),
     body: JSON.stringify({ message })
   });
 
@@ -51,7 +65,9 @@ export async function postChatMessage(message: string) {
 }
 
 export async function getComplaintSummary() {
-  const response = await fetch(`${getApiUrl()}/api/summary`);
+  const response = await fetch(`${getApiUrl()}/api/summary`, {
+    headers: getOptionalAuthHeaders()
+  });
   if (!response.ok) {
     throw new Error(`Summary request failed with ${response.status}`);
   }
@@ -60,14 +76,26 @@ export async function getComplaintSummary() {
 
 export async function getComplaints(filters: { sentiment: string; urgency: string; query: string }) {
   const params = new URLSearchParams(filters);
-  const response = await fetch(`${getApiUrl()}/api/complaints?${params.toString()}`);
+  const response = await fetch(`${getApiUrl()}/api/complaints?${params.toString()}`, {
+    headers: getOptionalAuthHeaders()
+  });
   if (!response.ok) {
     throw new Error(`Complaint request failed with ${response.status}`);
   }
   return response.json() as Promise<Complaint[]>;
 }
 
-export function getCsvExportUrl(filters: { sentiment: string; urgency: string; query: string }) {
+function getCsvExportUrl(filters: { sentiment: string; urgency: string; query: string }) {
   const params = new URLSearchParams(filters);
   return `${getApiUrl()}/api/export.csv?${params.toString()}`;
+}
+
+export async function fetchCsvExport(filters: { sentiment: string; urgency: string; query: string }) {
+  const response = await fetch(getCsvExportUrl(filters), {
+    headers: getOptionalAuthHeaders()
+  });
+  if (!response.ok) {
+    throw new Error(`CSV export failed with ${response.status}`);
+  }
+  return response.text();
 }

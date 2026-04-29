@@ -10,7 +10,7 @@ from io import StringIO
 from pathlib import Path
 from typing import Any, Literal
 
-from fastapi import FastAPI
+from fastapi import Depends, FastAPI, Header, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import PlainTextResponse
 from pydantic import BaseModel
@@ -60,6 +60,17 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+
+def require_support_manager(
+    x_support_manager_key: str | None = Header(default=None),
+) -> None:
+    expected_key = os.getenv("SUPPORT_MANAGER_API_KEY")
+    if not expected_key:
+        return
+
+    if x_support_manager_key != expected_key:
+        raise HTTPException(status_code=401, detail="Invalid support manager API key")
 
 
 MAX_MESSAGE_CHARS = 600
@@ -219,12 +230,12 @@ def health():
     return {"status": "ok"}
 
 
-@app.get("/api/summary")
+@app.get("/api/summary", dependencies=[Depends(require_support_manager)])
 def summary():
     return tools.get_complaint_summary()
 
 
-@app.get("/api/complaints")
+@app.get("/api/complaints", dependencies=[Depends(require_support_manager)])
 def complaints(sentiment: str = "all", urgency: str = "all", query: str = ""):
     results = tools.search_complaints(sentiment=sentiment, urgency=urgency, query=query)
     return [
@@ -236,7 +247,7 @@ def complaints(sentiment: str = "all", urgency: str = "all", query: str = ""):
     ]
 
 
-@app.get("/api/export.csv", response_class=PlainTextResponse)
+@app.get("/api/export.csv", response_class=PlainTextResponse, dependencies=[Depends(require_support_manager)])
 def export_csv(sentiment: str = "all", urgency: str = "all", query: str = ""):
     results = tools.search_complaints(sentiment=sentiment, urgency=urgency, query=query)
     output = StringIO()
@@ -249,7 +260,7 @@ def export_csv(sentiment: str = "all", urgency: str = "all", query: str = ""):
     return PlainTextResponse(output.getvalue(), media_type="text/csv")
 
 
-@app.post("/api/chat", response_model=ChatResponse)
+@app.post("/api/chat", response_model=ChatResponse, dependencies=[Depends(require_support_manager)])
 async def chat(request: ChatRequest):
     trace_id = str(uuid.uuid4())
     started_at = time.perf_counter()

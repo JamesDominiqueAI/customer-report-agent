@@ -1,5 +1,6 @@
 import unittest
 import asyncio
+from unittest.mock import patch
 
 from fastapi.testclient import TestClient
 
@@ -142,6 +143,30 @@ class ComplaintToolTests(unittest.TestCase):
         self.assertIn("text/csv", response.headers["content-type"])
         self.assertIn("id,customer,channel,category,urgency,sentiment,createdAt,text", response.text)
         self.assertIn("C-1001", response.text)
+
+    def test_optional_api_key_blocks_protected_routes(self):
+        client = TestClient(app)
+
+        with patch.dict("os.environ", {"SUPPORT_MANAGER_API_KEY": "demo-secret"}):
+            response = client.post(
+                "/api/chat",
+                json={"message": "Show only urgent complaints."},
+            )
+
+        self.assertEqual(response.status_code, 401)
+
+    def test_optional_api_key_allows_protected_routes_with_header(self):
+        client = TestClient(app)
+
+        with patch.dict("os.environ", {"SUPPORT_MANAGER_API_KEY": "demo-secret"}):
+            response = client.post(
+                "/api/chat",
+                headers={"X-Support-Manager-Key": "demo-secret"},
+                json={"message": "Show only urgent complaints."},
+            )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json()["tool"], "get_urgent_complaints")
 
 
 if __name__ == "__main__":

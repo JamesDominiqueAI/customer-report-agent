@@ -140,7 +140,7 @@ GitHub production deployment checks are handled by `.github/workflows/vercel-pro
 - Success criteria: core complaint flows, production behavior, safety, and verification commands are defined in `guides/success_criteria.md`.
 - Edge cases: empty input, oversized input, prompt-injection attempts, missing external integrations, and adversarial secret requests are handled.
 - Tests: backend unit tests cover complaint tools, routing, external adapter fallbacks, and guardrail behavior.
-- Security: unsafe requests return `security_guardrail` before tool selection.
+- Security: unsafe requests return `security_guardrail` before tool selection; optional API key protection is available with `SUPPORT_MANAGER_API_KEY`.
 - Observability: `/api/chat` returns trace ID and latency, and emits structured backend logs.
 - Deployment: frontend and backend are public, and GitHub Actions reports CI plus a production deployment status.
 - Communication: video scripts and final presentation notes are in `guides/video_scripts.md`.

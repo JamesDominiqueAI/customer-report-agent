@@ -15,13 +15,14 @@ This project is considered successful when the deployed chatbot can satisfy thes
 - The backend attempts the FastMCP tool registry first and falls back to direct tool functions if needed.
 - Each chat response includes the selected tool, source, trace ID, and latency.
 - External MCP adapter tools fail safely when optional webhook URLs are not configured.
+- Protected routes reject missing or invalid API keys when `SUPPORT_MANAGER_API_KEY` is configured.
 
 ## Safety And Edge Cases
 
 - Empty chat input returns a guardrail message instead of selecting a business tool.
 - Prompt-injection attempts asking for hidden prompts or credentials return `security_guardrail`.
 - Long inputs over the demo limit return `security_guardrail`.
-- Tests cover happy paths, external adapter fallbacks, routing behavior, and adversarial requests.
+- Tests cover happy paths, external adapter fallbacks, routing behavior, adversarial requests, API responses, CSV export, and optional API key enforcement.
 
 ## Verification Commands
 

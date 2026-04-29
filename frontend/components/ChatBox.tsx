@@ -3,8 +3,8 @@
 import { FormEvent, useEffect, useMemo, useRef, useState } from "react";
 import {
   Complaint,
+  fetchCsvExport,
   getComplaints,
-  getCsvExportUrl,
   postChatMessage
 } from "@/lib/api";
 import { demoPrompts } from "@/lib/prompts";
@@ -223,6 +223,15 @@ export function ChatBox() {
     downloadTextFile("customer-manager-report.md", content);
   }
 
+  async function handleExportCsv() {
+    try {
+      const csv = await fetchCsvExport({ sentiment: sentimentFilter, urgency: urgencyFilter, query });
+      downloadTextFile("customer-complaints.csv", csv);
+    } catch {
+      setVoiceStatus("CSV export failed");
+    }
+  }
+
   function handleVoiceCommand(transcript: string) {
     const normalized = transcript.toLowerCase();
     if (normalized.includes("clear chat")) {
@@ -414,12 +423,13 @@ export function ChatBox() {
             <option value="medium">Medium</option>
             <option value="low">Low</option>
           </select>
-          <a
+          <button
+            type="button"
             className="export-link"
-            href={getCsvExportUrl({ sentiment: sentimentFilter, urgency: urgencyFilter, query })}
+            onClick={() => void handleExportCsv()}
           >
             Export CSV
-          </a>
+          </button>
         </div>
 
         <div className="complaint-grid">
