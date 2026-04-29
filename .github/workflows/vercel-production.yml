@@ -24,6 +24,7 @@ jobs:
     env:
       VERCEL_ORG_ID: team_jt4SvzDOBYbysg8SceruRvX0
       VERCEL_PROJECT_ID: prj_NB98fgnpULeUbILRFMX9zkwxGLK6
+      VERCEL_SCOPE: jamesragivedominique-6154s-projects
       VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
       NEXT_PUBLIC_API_URL: https://customer-report-agent-api.vercel.app
 
@@ -56,9 +57,13 @@ jobs:
           mkdir -p .vercel
           printf '{"orgId":"%s","projectId":"%s","projectName":"frontend"}\n' "$VERCEL_ORG_ID" "$VERCEL_PROJECT_ID" > .vercel/project.json
 
+      - name: Check Vercel project access
+        working-directory: frontend
+        run: npx vercel@latest project inspect frontend --scope "$VERCEL_SCOPE" --token "$VERCEL_TOKEN"
+
       - name: Deploy frontend to Vercel
         id: deploy
         working-directory: frontend
         run: |
-          deployment_url="$(npx vercel@latest deploy --prod --yes --token="$VERCEL_TOKEN" --build-env NEXT_PUBLIC_API_URL="$NEXT_PUBLIC_API_URL")"
+          deployment_url="$(npx vercel@latest deploy --prod --yes --scope "$VERCEL_SCOPE" --token="$VERCEL_TOKEN" --build-env NEXT_PUBLIC_API_URL="$NEXT_PUBLIC_API_URL")"
           echo "url=${deployment_url}" >> "$GITHUB_OUTPUT"
